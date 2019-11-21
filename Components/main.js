@@ -4,10 +4,16 @@ import * as ImagePicker from 'expo-image-picker';
 import * as Permissions from 'expo-permissions';
 import Constants from 'expo-constants';
 import ImgToBase64 from 'react-native-image-base64';
+import * as FileSystem from 'expo-file-system';
+import base64 from 'base-64';
+import utf8 from 'utf8';
+import axios from 'axios';
+
+
+
 
 const WIDTH = Dimensions.get('window').width
 const HEIGHT = Dimensions.get('window').height
-
 
 
 
@@ -19,9 +25,11 @@ export default class Encrypter extends React.Component{
         data:null,
         type:'encoding',
         image:null,
+        imageSelect:null,
         isUploading:false,
         mainImage:null,
-        base64send:null
+        base64send:null,
+        b64:null
     }
     render() {
         
@@ -139,17 +147,59 @@ export default class Encrypter extends React.Component{
 
         console.log(result);
         if(!result.cancelled){
-            this.setState({ image: result.uri});
+            this.setState({ mainImage: result.uri});
             console.log('sakshu');
         }
     }
     meraDost = async () =>{
         console.log("sakshu");
         console.log(this.state.text);
-        console.log(this.state.image);
-        ImgToBase64.getBase64String(this.state.image)
-        .then(base64String => console.log(base64String))
-        .catch(err => console.log(err));
+        // console.log(this.state.image);
+        // let file = await FileSystem.readAsStringAsync(this.state.image, { encoding: 'base64' });
+        // console.log(file.substring(0,50))
+        // this.setState({
+        //     base64send: file
+        // })
+        let formData = new FormData()
+        formData.append("text", this.state.text)
+        // formData.append("image", this.state.file)
+
+         try{
+            let res = await axios.post('http://61770f5b.ngrok.io/encode',formData)
+            this.setState({
+              b64:`data:image/png;base64,${res.data.image}`,
+              data:res.data.key,
+              image:`data:image/png;base64,${res.data.image}`
+            })
+           }catch(err){
+             console.log(err)
+           }
+        if(this.state.mainimage){
+            console.log(this.state.image);
+        let file = await FileSystem.readAsStringAsync(this.state.mainimage, { encoding: 'base64' });
+        console.log(file.substring(0,50))
+        this.setState({
+            base64send: file
+        })
+            let formData = new FormData()
+            formData.append("key", this.state.text)
+            formData.append("image",file)
+            
+            try{
+                let res = await axios.post('http://61770f5b.ngrok.io/decode',formData)
+                this.setState({
+                  
+                  data:res.data.key,
+                  image:null
+                })
+                
+               }catch(err){
+                 console.log(err)
+               }
+
+        }
+       
+
     }
 
 }
