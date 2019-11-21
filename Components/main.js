@@ -3,6 +3,7 @@ import { Button, Image, View, Text, ActivityIndicator, Alert,TextInput, Dimensio
 import * as ImagePicker from 'expo-image-picker';
 import * as Permissions from 'expo-permissions';
 import Constants from 'expo-constants';
+import ImgToBase64 from 'react-native-image-base64';
 
 const WIDTH = Dimensions.get('window').width
 const HEIGHT = Dimensions.get('window').height
@@ -19,7 +20,8 @@ export default class Encrypter extends React.Component{
         type:'encoding',
         image:null,
         isUploading:false,
-        mainImage:null
+        mainImage:null,
+        base64send:null
     }
     render() {
         
@@ -145,6 +147,9 @@ export default class Encrypter extends React.Component{
         console.log("sakshu");
         console.log(this.state.text);
         console.log(this.state.image);
+        ImgToBase64.getBase64String(this.state.image)
+        .then(base64String => console.log(base64String))
+        .catch(err => console.log(err));
     }
 
 }
