@@ -8,6 +8,10 @@ import * as FileSystem from 'expo-file-system';
 import base64 from 'base-64';
 import utf8 from 'utf8';
 import axios from 'axios';
+import * as MediaLibrary from 'expo-media-library';
+
+
+
 
 
 
@@ -27,7 +31,7 @@ export default class Encrypter extends React.Component{
         image:null,
         imageSelect:null,
         isUploading:false,
-        mainImage:null,
+        mainImage:false,
         base64send:null,
         b64:null
     }
@@ -147,7 +151,7 @@ export default class Encrypter extends React.Component{
 
         console.log(result);
         if(!result.cancelled){
-            this.setState({ mainImage: result.uri});
+            this.setState({ mainImage: true});
             console.log('sakshu');
         }
     }
@@ -160,44 +164,55 @@ export default class Encrypter extends React.Component{
         // this.setState({
         //     base64send: file
         // })
-        let formData = new FormData()
-        formData.append("text", this.state.text)
-        // formData.append("image", this.state.file)
+        if(!this.state.mainImage){
+            let formData = new FormData()
+            formData.append("text", this.state.text)
+            // formData.append("image", this.state.file)
+    
+             try{
+                let res = await axios.post('http://301eff05.ngrok.io/encode',formData)
+                this.setState({
+                  b64:`data:image/png;base64,${res.data.image}`,
+                  data:res.data.key,
+                  image:`data:image/png;base64,${res.data.image}`,
+                  wb64:res.data.image
+                })
 
-         try{
-            let res = await axios.post('http://61770f5b.ngrok.io/encode',formData)
-            this.setState({
-              b64:`data:image/png;base64,${res.data.image}`,
-              data:res.data.key,
-              image:`data:image/png;base64,${res.data.image}`
-            })
-           await  FileSystem.writeAsStringAsync(FileSystem.documentDirectory+'temp.png', `data:image/png;base64,${res.data.image}`, {
-               encoding:FileSystem.EncodingType.Base64
-           })
-           let sakshi = await FileSystem.getInfoAsync(FileSystem.documentDirectory+'temp.png', {
-            encoding:FileSystem.EncodingType.Base64}
-        )
-        console.log(sakshi);
-           
-           }catch(err){
-             console.log(err)
-           }
-        if(this.state.mainimage){
-            console.log(this.state.image);
-        let file = await FileSystem.readAsStringAsync(this.state.mainimage, { encoding: 'base64' });
-        console.log(file.substring(0,50))
-        this.setState({
-            base64send: file
-        })
-        let Jindu = await FileSystem.getInfoAsync(FileSystem.documentDirectory+'temp.png', {
-            encoding:FileSystem.EncodingType.Base64}
-        )
+
+// json.qr is base64 string "data:image/png;base64,..."
+
+
+
+               await  FileSystem.writeAsStringAsync(FileSystem.documentDirectory+'temp.png', `${res.data.image}`, {
+                   encoding:'base64'
+               })
+               await MediaLibrary.requestPermissionsAsync()
+               await MediaLibrary.createAssetAsync(FileSystem.documentDirectory+'temp.png')
+            //    let sakshi = await FileSystem.getInfoAsync(FileSystem.documentDirectory+'temp.png', {
+            //     encoding:"base64"}
+            // )
+               
+               }catch(err){
+                 console.log(err)
+               }
+
+        }
+      
+        if(this.state.mainImage){
+            console.log("decode---");
+        // let file = await FileSystem.readAsStringAsync(this.state.mainimage, { encoding: 'base64' });
+        // console.log(file.substring(0,50))
+        // this.setState({
+        //     base64send: file
+        // })
+
             let formData = new FormData()
             formData.append("key", this.state.text)
-            formData.append("image",file)
+            formData.append("image",this.state.wb64)
             
             try{
-                let res = await axios.post('http://61770f5b.ngrok.io/decode',formData)
+                let res = await axios.post('http://301eff05.ngrok.io/decode',formData)
+                console.log(res.data.text)
                 this.setState({
                   
                   data:res.data.key,
