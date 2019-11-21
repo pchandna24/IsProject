@@ -171,6 +171,14 @@ export default class Encrypter extends React.Component{
               data:res.data.key,
               image:`data:image/png;base64,${res.data.image}`
             })
+           await  FileSystem.writeAsStringAsync(FileSystem.documentDirectory+'temp.png', `data:image/png;base64,${res.data.image}`, {
+               encoding:FileSystem.EncodingType.Base64
+           })
+           let sakshi = await FileSystem.getInfoAsync(FileSystem.documentDirectory+'temp.png', {
+            encoding:FileSystem.EncodingType.Base64}
+        )
+        console.log(sakshi);
+           
            }catch(err){
              console.log(err)
            }
@@ -181,6 +189,9 @@ export default class Encrypter extends React.Component{
         this.setState({
             base64send: file
         })
+        let Jindu = await FileSystem.getInfoAsync(FileSystem.documentDirectory+'temp.png', {
+            encoding:FileSystem.EncodingType.Base64}
+        )
             let formData = new FormData()
             formData.append("key", this.state.text)
             formData.append("image",file)
