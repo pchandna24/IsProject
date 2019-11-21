@@ -19,9 +19,10 @@ export default class Encrypter extends React.Component{
         type:'encoding',
         image:null,
         isUploading:false,
+        mainImage:null
     }
     render() {
-        let{image}= this.state;
+        
         
         if(this.state.type == "encoding"){
             return (
@@ -35,8 +36,14 @@ export default class Encrypter extends React.Component{
                 Pick an Image from Camera Roll
                 </Text>
                 <Text style={{alignItems:'center',textAlign:'center',width:350,fontWeight:"bold",fontSize:15,backgroundColor:'#404040',height:50,paddingTop:15,color:'white'}} onPress={this.meraDost}>Upload</Text>
-                {image &&
-                <Image source={{ uri: image }} style={{ width: 300, height: 300 }} />}
+                <View style={{marginTop:20,marginLeft:50}}>
+                {this.state.image &&
+                <Image source={{ uri: this.state.image }} style={{ width: 250, height: 250}} />}
+                </View>
+                { this.state.data && 
+                    <Text style={{alignItems:'center',textAlign:'center',width:350,fontWeight:"bold",color:'white',fontSize:20}} >{`${this.state.data}`}</Text>
+                }
+                
 
                 <TouchableOpacity
                 style={{
@@ -76,8 +83,12 @@ export default class Encrypter extends React.Component{
                 </Text>
                 <Text style={{alignItems:'center',textAlign:'center',width:350,fontWeight:"bold",fontSize:15,backgroundColor:'#404040',height:50,paddingTop:15,color:'white'}} onPress={this.meraDost}>Upload</Text>
                 <View style={{marginTop:20,marginLeft:50}}>
-                {image &&
-                <Image source={{ uri: image }} style={{ width: 200, height: 200}} />}</View>
+                {this.state.image &&
+                <Image source={{ uri: this.state.image }} style={{ width: 250, height: 250}} />}
+                </View>
+                { this.state.data && 
+                    <Text style={{alignItems:'center',textAlign:'center',width:350,fontWeight:"bold",color:'white',fontSize:20}} >{`${this.state.data}`}</Text>
+                }
                 
           <TouchableOpacity style={{
                     position:'absolute',
