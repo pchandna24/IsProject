@@ -151,7 +151,7 @@ export default class Encrypter extends React.Component{
 
         console.log(result);
         if(!result.cancelled){
-            this.setState({ mainImage: true});
+            this.setState({ mainImage: result.uri});
             console.log('sakshu');
         }
     }
@@ -167,10 +167,11 @@ export default class Encrypter extends React.Component{
         if(!this.state.mainImage){
             let formData = new FormData()
             formData.append("text", this.state.text)
+
             // formData.append("image", this.state.file)
     
              try{
-                let res = await axios.post('http://301eff05.ngrok.io/encode',formData)
+                let res = await axios.post('http://66f87d68.ngrok.io/encode',formData)
                 this.setState({
                   b64:`data:image/png;base64,${res.data.image}`,
                   data:res.data.key,
@@ -205,18 +206,21 @@ export default class Encrypter extends React.Component{
         // this.setState({
         //     base64send: file
         // })
-
+            let suu = await  FileSystem.readAsStringAsync(this.state.mainImage, {
+                encoding:'base64'
+            })
+            console.log(suu.substring())
             let formData = new FormData()
             formData.append("key", this.state.text)
             formData.append("image",this.state.wb64)
+            console.log(this.state.text)
             
             try{
-                let res = await axios.post('http://301eff05.ngrok.io/decode',formData)
+                let res = await axios.post('http://66f87d68.ngrok.io/decode',formData)
                 console.log(res.data.text)
                 this.setState({
                   
-                  data:res.data.key,
-                  image:null
+                  data:res.data.text,
                 })
                 
                }catch(err){
